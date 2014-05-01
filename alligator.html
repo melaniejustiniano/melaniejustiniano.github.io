@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script type="text/javascript" src="libs/jquery-1.11.0.min.js"></script>
+<script src="libs/FileSaver.js"></script>
+
+<div id="vis"></div>
+
+
+<script>
+
+// jQuery.ajaxSettings.traditional = true; // necessary for list of buckets
+var apiKey = 'AQZMTLHUCSWFXRMUJ';
+var baseURL = 'http://developer.echonest.com/api/v4/';
+
+function makeRequest(endPoint, options, success, error) {
+    var url = baseURL + endPoint;
+
+    var data = { 
+        format:'jsonp', 
+        api_key: apiKey,
+    };
+    $.extend(data, options);
+
+    $.ajax({
+        dataType: "jsonp",
+        cache: true,
+        type: 'GET',
+        url: url,
+        data: decodeURIComponent($.param(data, true)),
+        success: success,
+        error: error
+    });
+}
+
+function getGenres() {
+    console.log("getGenres() ...")
+
+    var genres = [];
+
+    function callback(data, textStatus, jqXHR) {
+        genres = genres.concat(data.response.genres);
+
+        if (genres.length < data.response.total) {
+            var options = { results: 100, start: genres.length };
+            makeRequest('genre/list', options, callback, error);
+        }
+        else {
+            console.log("getGenres() COMPLETE");
+            return genres;
+        }
+    }
+
+    function error(jqXHR, textStatus, errorThrown) {
+        alert("Error retrieving data. Please reload page.")
+    }
+
+    var options = { results: 100 };
+    makeRequest('genre/list', options, callback, error);
+}
+
+function getArtists(genres, numArtists) {
+    if (!numArtists)
+        numArtists = 300;
+    console.log("getArtists() ...");
+
+    // Convert to Objects
+    genres = genres.map(function(g) {
+        return { name: g, artists: [] };
+    })
+
+    // Fetch Artists by Genre
+    var genresCollected = 0;
+    genres.map(function(g) {
+        function callback(data, textStatus, jqXHR) {
+            g.artists = g.artists.concat(data.response.artists);
+            if (data.response.artists.length >= 100 && g.artists.length < numArtists) {
+                var remaining = numArtists - g.artists.length;
+                var options = { results: 100, genre: g.name, artist_location: "country:united+states", bucket: ['artist_location', 'years_active', 'familiarity'], sort: 'familiarity-desc', start: g.artists.length };
+                makeRequest('artist/search', options, callback, error);              
+            }
+            else {
+                if (++genresCollected == genres.length) {
+                    // Sort Artists by Year
+                    /*g.artists.sort(function(a, b) {
+                        if (a.years_active[0].start < b.years_active[0].start) return -1;
+                        else if (a.years_active[0].start > b.years_active[0].start) return 1;
+                        else return 0;
+                    })*/
+                    artistsFetched();
+                }
+            }
+        }
+
+        function error(jqXHR, textStatus, errorThrown) {
+            alert("Error retrieving artists for " + genre.name + ". Please reload page.")
+        }
+
+        // var remaining = numArtists - g.artists.length;
+        var options = { results: 100, genre: g.name, artist_location: "country:united+states", bucket: ['artist_location', 'years_active'], sort: 'familiarity-desc' };
+        makeRequest('artist/search', options, callback, error);
+    });
+
+    function artistsFetched() {
+        console.log("getArtists() COMPLETE");
+        updateLocations(genres);
+    }
+}
+
+// could do inline, but keep modular for removability
+var updateLocations = function(genres) {
+    var apiKey = 'AIzaSyCOruLItTVH6qw7L9L_uRSfTSHUTjCwGgI';
+    var baseURL = 'https://maps.googleapis.com/maps/api/geocode/json';
+
+    function geocode(address, success, error) {
+        var data = { 
+            key: apiKey,
+            sensor: false,
+            address: address,
+            components: "country:US"
+        };
+
+        $.ajax({
+            dataType: "json",
+            cache: true,
+            type: 'GET',
+            url: baseURL,
+            data: decodeURIComponent($.param(data, true)),
+            success: success,
+            error: error
+        });
+    }
+
+    var locations = {};
+
+    // use for loop and do in place
+    var genresUpdate = [];
+    genres.map(function(genre) {
+        var artistsUpdate = [];
+        var artistsSeen = 0;
+        genre.artists.map(function(artist) {
+            function callback(data, textStatus, jqXHR) {
+                var res = data.results.filter(function(result) {
+                    return result.types.indexOf("locality") != -1;
+                });
+                if (res.length >= 1 && artist.years_active.length > 0) {
+                    artist.artist_location = res[0];
+                    artistsUpdate.push(artist);
+                }
+                if (++artistsSeen >= genre.artists.length) {
+                    genreFinished();
+                }
+            }
+            function error(jqXHR, textStatus, errorThrown) {
+                alert("Error location data for " + genres[i].artists[j].name + ". Please reload page.")
+            }
+
+            geocode(artist.artist_location.location, callback, error);
+        });
+
+        function genreFinished() {
+            genre.artists = artistsUpdate;
+            genresUpdate.push(genre);
+            if (genresUpdate.length == genres.length)
+                genresFinished();
+        }
+    });
+
+    function genresFinished() {
+        console.log(genresUpdate);     
+
+        // bucket by locaiton   
+        genresUpdate = genres.map(function(genre) {            
+            var nest = d3.nest()
+                .key(function(d) { return d.artist_location.formatted_address; })
+                .entries(genre.artists);
+
+            genre.locations = nest;
+            delete genre.artists;
+            return genre;
+        });
+
+        // bring out nested locaiton information
+        genresUpdate = genres.map(function(genre) {
+            genre.locations = genre.locations.map(function(location) {
+                location.details = location.values[0].artist_location;
+                location.artists = location.values;
+                delete location.values;
+                return location;
+            });
+            return genre;
+        });
+
+        console.log(genresUpdate);
+        saveToFile(genresUpdate, "artistsByGenre.json");
+    }
+}
+
+var saveToFile = function(object, filename){
+    var blob, blobText;
+    blobText = [JSON.stringify(object)];
+    blob = new Blob(blobText, {
+        type: "text/plain;charset=utf-8"
+    });
+    saveAs(blob, filename);
+}
+
+getArtists(['grunge', 'pop', 'rock', 'country', 'jazz', 'rap', 'hip hop', 'blues', 'classic rock', 'latin']);
+
+</script>
+
+
+</body>
+</html>

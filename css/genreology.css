@@ -1,0 +1,286 @@
+body {
+    text-align: center;
+}
+
+.genre-select-wrapper {
+    margin-top: 30px;
+}
+.genre-label, .genre-select {
+    display: inline-block;
+    font-size: 42px;
+    line-height: 42px;
+}
+.genre-label {
+    font-family: 'CodeProDemoRegular';
+}
+.genre-select {
+    position: relative;
+    padding: 2px 33px 0px 8px;
+    margin: 0 auto;
+    border: 1px solid #000000;
+    border-radius: 8px;
+
+    cursor: pointer;
+    font-family: 'CodeProLightDemoRegular';
+
+    background-image: url("arrow-down.png");
+    background-size: auto 16px;
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+}
+.genre-select .dropdown {
+    list-style: none;
+    font-size: 20px;
+    line-height: 20px;
+
+    position: absolute;
+    top: 100%;
+
+    /* Set to same width as button */
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 8px;
+    background-color: #D3D3D3;
+    margin-top: 8px;
+
+    display: none;
+}
+.genre-select .dropdown li {
+    display: block;
+    padding: 8px 0;
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+}
+.genre-select .dropdown li:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.genre-select .dropdown li:last-child {
+    border-bottom: 1px solid #000;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+.genre-select .dropdown li.hover {
+    background-color: white;
+}
+.genre-select.active .dropdown {
+    display: block;
+}
+.genre-select.active:after {
+    background-image: url("arrow-up.png");  
+}
+
+.country {
+    fill: transparent;
+    stroke: #999999;
+    stroke-width: 2px;
+}
+
+.state.active {
+    fill: #DEDEDE;
+}
+
+text {
+    text-align: center;
+    font-family: Tahoma;
+    font-size: small;
+}
+/*
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}*/
+
+.city {
+ /*   fill: blue; */
+    stroke: white;
+    opacity: .8;
+}
+.city.hover,
+.city:hover {
+    opacity: 1;
+    cursor: pointer;
+    fill: darkgreen;
+}
+.city.selected {
+    fill: lightgreen;
+}
+.city.hidden {
+    display: none;
+}
+
+.city.past {
+  /*  fill: lightblue; */
+    stroke: white;
+}
+
+.axis .tick line {
+    display: none;
+}
+.axis .tick text {
+    font-family: 'CodeProLightDemoRegular';
+    font-size: 20px;
+    fill: #999999;
+}
+.x.axis path {
+    fill: none;
+    stroke: #999999;
+    stroke-width: 2px;
+}
+#slider .line {
+  fill: none;
+  stroke: #999999;
+  stroke-width: 1.5px;
+}
+#slider circle {
+    fill: #999999;
+}
+#slider .overlay .line,
+#slider .overlay .x.axis path {
+    stroke: #000000;
+}
+#slider .overlay circle,
+#slider .overlay .axis .tick text {
+    fill: #000000;
+}
+
+.handle-bar {
+    stroke-width: 2px;
+    stroke: #000;
+}
+.handle text {
+    font-family: 'CodeProDemoRegular';
+    font-size: 22px;
+    stroke-width: 1px;
+    text-anchor: middle;
+    alignment-baseline: hanging;
+}
+
+#tooltip {
+    position: absolute;
+    width: 100px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+#tooltip.hidden {
+    display: none;
+}
+
+#tooltip p {
+    margin: 0;
+    text-align: center;
+    font-family: Tahoma;
+    font-size: small;
+}
+
+#vis,
+#detail-panel {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#detail-panel {
+    font-family: 'CodeProLightDemoRegular';
+    overflow: hidden;
+    width: 300px;
+    position: relative;
+    height: 360px;
+}
+
+#city-detail {
+    position: relative;
+    left: 0px;
+}
+
+#detail-panel .title {
+    font-family: 'CodeProDemoRegular';
+}
+
+#detail-panel .artists {
+    list-style: none;
+    text-align: left;
+    table-layout:fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border: 0;
+    margin-bottom: 6px;
+}
+#detail-panel .artists .artist.current {
+    font-family: 'CodeProDemoRegular';
+}
+#detail-panel .artists .year {
+    text-align: right;
+    vertical-align: bottom;
+    width: 40px;
+}
+
+#genre-detail .city .label {
+    font-family: 'CodeProDemoRegular';
+    fill: black;
+    stroke: black;
+    font-size: 10px;
+    text-anchor: middle;
+}
+
+.artists-wrapper {
+    max-height: 154px;
+    margin-top: 10px;
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+.fade {
+    height: 30px;
+    width: 100%;
+    position: absolute;
+    top: 260px;
+
+    /* "transparent" only works here because == rgba(0,0,0,0) */ 
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, transparent),color-stop(1, white));
+    background-image: -webkit-linear-gradient(top, transparent, white);
+    background-image: -moz-linear-gradient(top, transparent, white);
+    background-image: -ms-linear-gradient(top, transparent, white);
+    background-image: -o-linear-gradient(top, transparent, white);
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+#transport {
+    position: absolute;
+    bottom: 0;
+    left: 16px; /* (300 - 267) / 2 */
+}
+
+#transport button {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 4px;
+    border-color: #DDDDDD;
+}
+#transport button img {
+    margin-top: 2px;
+}
+input:focus,
+button:focus { outline: none; }
