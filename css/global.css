@@ -1,0 +1,72 @@
+body {
+	background: #FFFFFF;
+	text-align: center;
+	font-family: sans-serif;
+	padding: 0;
+	margin: 0;
+	margin-bottom: 60px;
+	color: #000000;
+    font-family: 'CodeProLightDemoRegular';
+}
+
+a {
+    color: #388E8E;
+    text-decoration: none;
+    font-family: 'CodeProDemoRegular';
+}
+a:hover {
+	color: #66CCCC;
+}
+
+.video {
+	margin-top: 44px;
+}
+
+.static p, 
+.static h2 {
+	text-align: left;
+}
+
+.wrapper {
+	width: 1010px;
+	margin: 0 auto;
+}
+
+.header {
+	margin-top: 30px;
+	margin-bottom: 0px;
+	font-family: 'CodeProDemoRegular';
+}
+#title {
+	position: relative;
+	margin: 0;
+	font-size: 4em;
+}
+
+.nav {
+	margin: 0.1em 0;
+}
+.menu {
+	list-style: none;
+	padding-left: 0;
+	margin: 0;
+}
+.menu .menu-item {
+	display: inline-block;
+	margin: 16px 10px;
+}
+.menu .menu-item a {
+	text-transform: uppercase;
+	font-size: 1.5em;
+	padding: 0;
+}
+.menu .menu-item.selected a {
+	color: #66CCCC;
+}
+
+.footer {
+	margin-top: 80px;
+}
+.footer .credits {
+	margin-top: 3px;
+}

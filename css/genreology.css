@@ -2,6 +2,23 @@ body {
     text-align: center;
 }
 
+a {
+    color: #388E8E;
+    text-decoration: none;
+    font-family: 'CodeProDemoRegular';
+}
+
+.detail-view .title {
+    margin-bottom: 9.2px;
+}
+
+#viz-info {
+    font-size: 12px;
+}
+.bold {
+    font-family: 'CodeProDemoRegular';
+}
+
 .genre-select-wrapper {
     margin-top: 30px;
 }
@@ -103,12 +120,11 @@ text {
 }
 .city.hover,
 .city:hover {
-    opacity: 1;
     cursor: pointer;
-    fill: darkgreen;
+    fill: #FFF173;
 }
 .city.selected {
-    fill: lightgreen;
+    fill: #FFE500;
 }
 .city.hidden {
     display: none;
@@ -160,6 +176,11 @@ text {
     text-anchor: middle;
     alignment-baseline: hanging;
 }
+.handle .handle-artists-label {
+    font-size: 12px;
+    text-anchor: middle;
+    alignment-baseline: inherit;
+}
 
 #tooltip {
     position: absolute;
@@ -198,7 +219,7 @@ text {
     overflow: hidden;
     width: 300px;
     position: relative;
-    height: 360px;
+    height: 372px;
 }
 
 #city-detail {
@@ -237,7 +258,7 @@ text {
 }
 
 .artists-wrapper {
-    max-height: 154px;
+    max-height: 124px;
     margin-top: 10px;
     overflow: -moz-scrollbars-vertical;
     overflow-y: scroll;
@@ -264,6 +285,16 @@ text {
     border-radius: 4px;
     background-color: rgba(0,0,0,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+#close-city-detail {
+    text-transform: uppercase;
+    font-family: 'CodeProDemoRegular';
+    font-size: 12px;
+    cursor: pointer;
+}
+.close-city-detail-wrapper {
+    margin-top: 10px;
 }
 
 #transport {

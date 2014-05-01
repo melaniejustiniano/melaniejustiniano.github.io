@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Genreaology - Screencast</title>
+</head>
+
+<body>
+<link rel="stylesheet" href="css/code/stylesheet.css" type="text/css" charset="utf-8" />
+<link rel="stylesheet" href="css/code_light/stylesheet.css" type="text/css" charset="utf-8" />
+<link href="css/global.css" rel="stylesheet"/>
+	<div class="wrapper">
+		<div class="header">
+			<div class="logo">
+				<h1 id="title">Genreology</h1>
+			</div>
+			<div class="nav">
+				<ul id="header-menu" class="menu">
+					<li class="menu-item">
+						<a href="index.html">Home</a>
+					</li>
+					<li class="menu-item">
+						<a href="details.html">Details</a>
+					</li>
+					<li class="menu-item selected">
+						<a href="stories.html">Stories</a>
+					</li>						
+					<li class="menu-item">
+						<a href="screencast.html">Screencast</a>
+					</li>
+					<li class="menu-item">
+						<a href="processbook.pdf">Process Book</a>
+					</li>				
+					<li class="menu-item">
+						<a href="https://github.com/melaniejustiniano/cs171-final-justiniano-sheets">GitHub</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="content static">	
+		</div>
+	</div>
+	<div class="footer">
+		<div class="tagline">
+			<span class="bold">Genrealogy</span> was developed by Melanie Justiniano and Matt Sheets to explore the evolution of music genres in the US.
+		</div>
+		<div class="credits">
+			Powered by <a href="http://echonest.com/">The Echo Nest</a> & <a href="https://developers.google.com/maps/">Google Maps API</a>.
+		</div>
+	</div>
+</body>
+</html>

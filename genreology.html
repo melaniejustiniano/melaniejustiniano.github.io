@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Genreology</title>
+</head>
+
+
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<link rel="stylesheet" href="css/code/stylesheet.css" type="text/css" charset="utf-8" />
+<link rel="stylesheet" href="css/code_light/stylesheet.css" type="text/css" charset="utf-8" />
+<link href="css/genreology.css" rel="stylesheet"/>
+
+<div class="genre-select-wrapper">
+	<span class="genre-label">Genre:</span>
+
+	<div class="genre-select">
+		<span class="selected">Grunge</span>
+		<ul class="dropdown">
+		</ul>
+	</div>
+</div>
+
+<div id="vis"></div>
+<div id="detail-panel">
+	<div id="viz-info">
+		<span class="bold">Genrealogy</span> was developed by Melanie Justiniano and Matt Sheets to explore the evolution of music genres in the US. <div><a href="#">Read more.</a></div>
+	</div>
+	<div id="genre-detail" class="detail-view">
+		<h2 class="title">Genre Overview</h2>
+		<div class="artist-count">Total Artists in Sample: <span class="count"></span></div>
+		<div class="artist-count current">Pre-<span class="year"></span> Artists: <span class="count"></span></div>
+		<div class="popular-cities"></div>
+	</div>
+	<div id="city-detail" class="detail-view" style="display: none;">
+		<h2 class="title"><span class="name"></span></h2>
+		<div class="artist-count total">Total Artists: <span class="count"></span></div>
+		<div class="artist-count current">Pre-<span class="year"></span> Artists: <span class="count"></span></div>
+		<div class="artists-wrapper">
+			<table class="artists"></table>
+		</div>
+		<div class="close-city-detail-wrapper"><span id="close-city-detail">Return to Genre Overview</span></div>
+	</div>
+	<div id="transport">
+		<button id="start"><img width="25px" src="css/transport/start.png"></button>
+		<button id="prev"><img width="25px" src="css/transport/prev.png"></button>
+		<button id="play"><img width="25px" src="css/transport/play.png"></button>
+		<button id="next"><img width="25px" src="css/transport/next.png"></button>
+		<button id="end"><img width="25px" src="css/transport/end.png"></button>
+	</div>
+</div>
+<div id="slider"></div>
+
+<script src="genreology.js"></script>
+
+</body>
+</html>

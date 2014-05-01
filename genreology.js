@@ -41,7 +41,6 @@ function loadGenres(callback) {
             var genre = { genre: d.name, locations: d.locations, years: [], yearRange: [], artistCountRange: [], topCities: [], totalArtists: 0 }, 
                 years = {};
 
-            // TODO: sorted by year already? expedite this? // duplicate data
             genre.locations.forEach(function(location) {
                 var start = location.artists[0].years_active[0].start;
                 location.artists.forEach(function(artist) {
@@ -58,19 +57,7 @@ function loadGenres(callback) {
                 genre.totalArtists += location.artists.length;
                 genre.topCities.push(location);
 
-                // TODO: map names - done on data processing end - is data specific though so update? not automated
                 location.abbrev = location.details.address_components[0].short_name;
-                /*switch (toUpperCase(location.abbrev)) {
-                    case "LOS ANGELES":
-                        location.abbrev = "L.A.";
-                        break;
-                    case "SF":
-                        location.abbrev = "S.F.";
-                        break;
-                    case "NEW YORK":
-                        location.abbrev = "N.Y.C.";
-                        break;
-                }*/
             });
             for (var year in years)
                 genre.years.push({ year: +year, artists: years[year] })
@@ -146,7 +133,7 @@ function initVis(vis, id, width, height, mTop, mRight, mBottom, mLeft) {
 
 // Primary visualization initializer
 function initPrimary() {
-    initVis(p, "#vis", 700, 440, 15, 50, 5, 10);
+    initVis(p, "#vis", 700, 440, 15, 50, 5, 30);
 
     // Create map
     p.projection = d3.geo.albersUsa().translate([p.width / 2, p.height / 2]).scale(900);
@@ -163,12 +150,12 @@ function initPrimary() {
 
 
     p.colorScale = d3.scale.linear()
-        .range(["#2F0f71", "#956BD6"]);
+        .range(["#388E8E", "#ADEAEA"]);
 }
 
 // Slider initializer
 function initSlider() {
-    initVis(s, "#slider", 900, 176, 30, 0, 20, 30);
+    initVis(s, "#slider", 900, 176, 30, 60, 20, 60);
 
     s.inner = {};
     s.inner.margin = { top: 50 - s.margin.top, right: 0, bottom: 80 - s.margin.bottom, left: 0 };
@@ -193,13 +180,15 @@ function initSlider() {
 
     s.inner.overlay.append("path").attr("class", "line");
 
+    s.clipOffset = 30;
+
     // mask both to avoid duplicate and consequences on anti-aliasing
     s.inner.clipPathRect = s.vis.append("clipPath") //Make a new clipPath
             .attr("id", "inner-vis-clip-path")  //Assign an ID
         .append("rect")                     //Within the clipPath, create a new rect
             .attr("x", 0)                 //Set rect's position and size…
             .attr("y", -s.inner.margin.top)
-            .attr("width", s.width)
+            .attr("width", s.width + s.clipOffset)
             .attr("height", s.height);
     s.inner.vis.attr("clip-path", "url(#inner-vis-clip-path)");
 
@@ -207,9 +196,9 @@ function initSlider() {
     s.inner.overlayClipPathRect = s.vis.append("clipPath") //Make a new clipPath
             .attr("id", "inner-vis-overlay-clip-path")           //Assign an ID
         .append("rect")                     //Within the clipPath, create a new rect
-            .attr("x", 0)                 //Set rect's position and size…
+            .attr("x", -s.clipOffset)                 //Set rect's position and size…
             .attr("y", -s.inner.margin.top)
-            .attr("width", 0)
+            .attr("width", s.clipOffset)
             .attr("height", s.height);
     s.inner.overlay.attr("clip-path", "url(#inner-vis-overlay-clip-path)") ;
 
@@ -227,15 +216,21 @@ function initSlider() {
     s.handleLabel = s.handle.append("text")
         .attr("class", "handle-label")
         .attr("transform", "translate(0," + (s.height - 10) + ")");
+
+    s.handleArtistsLabel = s.handle.append("text")
+        .attr("class", "handle-artists-label")
+        .attr("transform", "translate(0,-8)");
 }
 
 // Genre detail visualization initializer
 function initGenreDetail() {
-    initVis(g, "#genre-detail", 300, 220, 20, 20, 20, 20);
+    initVis(g, ".popular-cities", 300, 190, 20, 20, 20, 20);
 
     g.detailPanel = d3.select("#genre-detail");
     g.name = g.detailPanel.select(".name");
     g.artistCount = g.detailPanel.select(".artist-count .count");
+    g.currentAristCount = g.detailPanel.select(".artist-count.current .count");
+    g.currentAristCountYear = g.detailPanel.select(".artist-count.current .year");
 
     var max = d3.max(data.genres, function(genre) {
         return genre.topCities[0].artists.length;
@@ -253,6 +248,13 @@ function initCityDetail() {
     c.currentAristCount = c.detailPanel.select(".artist-count.current .count");
     c.currentAristCountYear = c.detailPanel.select(".artist-count.current .year");
     c.artistsTable = c.detailPanel.select(".artists");
+
+    c.returnToGenre = c.detailPanel.select("#close-city-detail")
+        .on("click", function() {
+            console.log("click");
+            g.detailPanel.style("display", "inherit");
+            c.detailPanel.style("display", "none");
+        });
 }
 
 /*****************************************************************************
@@ -297,7 +299,6 @@ function initGenreMenu(d) {
         });
     });
 
-    // TODO - Move outside - use prevent default on all non things
     d3.select("body").on("click", function() {
         controls.genreSelect.classed('active', false);
     });
@@ -340,7 +341,8 @@ function initKeyboardControls() {
                 });                
                 break;
             case KEY.SPACE:
-                play();
+                if (!controls.playing) play();
+                else pause();
                 break;
             case KEY.ENTER:
                 if (controls.genreSelect.classed('active'))
@@ -375,7 +377,10 @@ function initTransportControls() {
     controls.timer;  // create timer object
     controls.playing = false;
 
-    d3.select('#play').on('click', play);
+    d3.select('#play').on('click', function() {
+        if (!controls.playing) play();
+        else pause();
+    });
 }
 
 // Playback animation
@@ -384,30 +389,28 @@ function play() {
         min = s.brush.x().domain()[0],
         val = s.brush.extent()[0];
 
-    if (!controls.playing) {  // if the map is currently playing
+    if (val >= max) updateYear(min);
 
-        if (val >= max) updateYear(min);
+    d3.select("#play img").attr("src",'css/transport/pause.png');  // change the button label to stop
+    controls.playing = true;   // change the status of the animation
 
-        d3.select("#play img").attr("src",'css/transport/pause.png');  // change the button label to stop
-        controls.playing = true;   // change the status of the animation
+    controls.timer = setInterval(function() {   // set a JS interval
+        val = s.brush.extent()[0];
+        if (++val <= max) {
+            updateYear(val);  // increment the current attribute counter
+        }
+        else {
+            clearInterval(controls.timer);   // stop the animation by clearing the interval
+            d3.select("#play img").attr("src", 'css/transport/play.png');   // change the button label to play
+            controls.playing = false;   // change the status again
+        }
+    }, 100);
+}
 
-        controls.timer = setInterval(function() {   // set a JS interval
-            val = s.brush.extent()[0];
-            if (++val <= max) {
-                updateYear(val);  // increment the current attribute counter
-            }
-            else {
-                clearInterval(controls.timer);   // stop the animation by clearing the interval
-                d3.select("#play img").attr("src", 'css/transport/play.png');   // change the button label to play
-                controls.playing = false;   // change the status again
-            }
-        }, 100);
-    } 
-    else {    // else if is currently playing
-        clearInterval(controls.timer);   // stop the animation by clearing the interval
-        d3.select("#play img").attr("src",'css/transport/play.png');   // change the button label to play
-        controls.playing = false;   // change the status again
-    } 
+function pause() {
+    clearInterval(controls.timer);   // stop the animation by clearing the interval
+    d3.select("#play img").attr("src",'css/transport/play.png');   // change the button label to play
+    controls.playing = false;   // change the status again 
 }
 
 /*****************************************************************************
@@ -476,7 +479,6 @@ function updatePrimaryGenre(genre) {
             if (c.detailPanel.style("display") == "none" || c.city != d) {
                 d3.event.stopPropagation();
                 updateCityDetail(d);
-                c.detailPanel.style("display", "inherit");
                 g.detailPanel.style("display", "none");
 
                 p.cities.classed("selected", false);
@@ -487,13 +489,11 @@ function updatePrimaryGenre(genre) {
                 g.detailPanel.style("display", "inherit");
                 p.cities.classed("selected", false);
             }
-        })
-        .on("mouseover", function(d) {
-
-        })
-        .on("mouseout", function() {
-
         });
+
+    // on hover show tootl tip
+    p.cities.append("svg:title")
+        .text(function(d) { return d.key; });
 }
 
 function updatePrimaryYear(year) {
@@ -572,7 +572,8 @@ function updateSliderGenre(genre) {
     s.xAxis = d3.svg.axis()
         .scale(s.xScale)
         .orient("bottom")
-        .tickFormat(d3.format("d"));
+        .tickFormat(d3.format("d"))
+        .outerTickSize(0);
 
     s.line = d3.svg.line()
         .interpolate("cardinal")
@@ -587,33 +588,21 @@ function updateSliderGenre(genre) {
     s.inner.circles = s.inner.vis.selectAll("circle").data(genre.years);
     s.inner.overlayCircles = s.inner.overlay.selectAll("circle").data(genre.years);
 
+    s.handleLabel.text(genre.years[0].year);
+    s.handleArtistsLabel.text("New Artists: " + genre.years[0].artists.length);
+
     updateTransition.each(function() {
         // move handle
         s.handle.transition()
             .attr("transform", "translate(0,0)");
 
         s.inner.clipPathRect.transition()
-            .attr("width", s.width)
+            .attr("width", s.width + s.clipOffset)
             .attr("x", 0);
 
         s.inner.overlayClipPathRect.transition()
-            .attr("width", 0);
+            .attr("width", s.clipOffset);
 
-        // fade out date
-      /*  handleLabel.transition()
-            .style("opacity", 0);
-
-        sliderVis.selectAll(".x.axis .tick").transition()
-            .style("opacity", 0);
-
-        // fade out data
-        sliderVis.selectAll("circle").transition()
-            .style("opacity", 0);
-
-        sliderVis.selectAll(".line").transition()
-            .style("opacity", 0);*/
-    })
-    .each("end", function() {
         // Axis
         s.inner.vis.select(".x.axis")
                 .attr("transform", "translate(0," + s.inner.height + ")" )
@@ -663,42 +652,13 @@ function updateSliderGenre(genre) {
         s.slide.selectAll(".extent,.resize").remove();
         s.slide.select(".background")
             .attr("height", s.height);
-
-        s.handleLabel.text(genre.years[0].year);
-
-        // Ensure 0 opacity new case new element added
-        // fade out date
-      /*  handleLabel.style("opacity", 0);
-
-        sliderVis.selectAll(".x.axis .tick").style("opacity", 0);
-
-        // fade out data
-        sliderVis.selectAll("circle").style("opacity", 0);
-
-        sliderVis.selectAll(".line").style("opacity", 0);       */ 
-    });
-
-    updateTransition.transition().each(function() {
-        // fade in date
-        s.handleLabel.transition()
-            .style("opacity", 1);
-
-        s.vis.selectAll(".x.axis .tick").transition()
-            .style("opacity", 1);
-
-        // fade in data
-        s.vis.selectAll("circle").transition()
-            .style("opacity", 1);
-
-        s.vis.selectAll(".line").transition()
-            .style("opacity", 1);
     });
 
     // http://bl.ocks.org/mbostock/6452972
     function brushed() {
+        pause();
         var year = Math.round(s.xScale.invert(d3.mouse(this)[0]));
-        updateSliderYear(year);
-        updatePrimaryYear(year);
+        updateYear(year);
     }
 }
 
@@ -708,17 +668,24 @@ function updateSliderYear(year) {
     s.handle.attr("transform", "translate(" + s.xScale(year) + ",0)");
     s.handleLabel.text(year);
 
+    var newArtists = data.currentGenre.years.filter(function(d) { return d.year == year; })[0].artists.length;
+    s.handleArtistsLabel.text("New Artists: " + newArtists);
+
     s.inner.clipPathRect
-        .attr("width", s.width - s.xScale(year))
+        .attr("width", s.clipOffset + s.width - s.xScale(year))
         .attr("x", s.xScale(year));
 
     s.inner.overlayClipPathRect
-        .attr("width", s.xScale(year));
+        .attr("width", s.xScale(year) + s.clipOffset);
 }
 
 function updateGenreDetail(genre) {
     g.name.text(genre.genre);
     g.artistCount.text(genre.totalArtists);
+
+    var currentYear = s.brush.extent()[0];
+    g.currentAristCount.text(genre.years[0].artists.length);
+    g.currentAristCountYear.text(currentYear);
 
     g.cities = g.vis.selectAll(".city")
             .data(genre.topCities);
@@ -744,7 +711,6 @@ function updateGenreDetail(genre) {
 
             var dParent = d3.select(this.parentNode)[0][0].__data__;
             updateCityDetail(dParent);
-            c.detailPanel.style("display", "inherit");
             g.detailPanel.style("display", "none");
 
             p.cities.classed("selected", function(e) { return e.key == dParent.key; });
@@ -786,7 +752,19 @@ function updateGenreDetail(genre) {
          
 }
 
-// TODO close when new genre selected??
+function updateGenreDetailYear(year) {
+    if (g.detailPanel.style("display") != "none") {
+        var years = data.currentGenre.years.filter(function(d) { return d.year <= year; }),
+            artists = 0;
+        years.map(function(year) {
+            artists += year.artists.length;
+        });
+
+        g.currentAristCount.text(artists);
+        g.currentAristCountYear.text(year);
+    }
+}
+
 function updateCityDetail(city) {
     c.city = city;
     c.name.text(city.key);
@@ -819,11 +797,13 @@ function updateCityDetail(city) {
     c.artistRows.append("td")
         .attr("class", "year")
         .text(function(d) { return d.years_active[0].start; });
+
+    c.detailPanel.style("display", "inherit");
 }
 
 function updateCityDetailYear(year) {
     if (c.detailPanel.style("display") != "none") {
-        c.currentAristCount.text(c.city.artists.filter(function(d) { return d.years_active[0].start < year; }).length);
+        c.currentAristCount.text(c.city.artists.filter(function(d) { return d.years_active[0].start <= year; }).length);
         c.currentAristCountYear.text(year);
 
         c.artistRows
@@ -956,9 +936,13 @@ function wrap(text, width) {
  *****************************************************************************/
 
 function updateGenre(genre) {
+    data.currentGenre = genre;
+    pause();
     updateTransition = d3.transition().duration(updateDuration);
     updatePrimaryGenre(genre);
     updateSliderGenre(genre);
+    g.detailPanel.style("display", "inherit");
+    c.detailPanel.style("display", "none")
     updateGenreDetail(genre);
     updateGenreMenu(genre);
 }
@@ -966,6 +950,7 @@ function updateGenre(genre) {
 function updateYear(year) {
     updatePrimaryYear(year);
     updateSliderYear(year);
+    updateGenreDetailYear(year);
     updateCityDetailYear(year);
 }
 

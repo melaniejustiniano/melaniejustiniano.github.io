@@ -1,54 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Genreology</title>
+    <title>Genreaology</title>
 </head>
 
-
 <body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
 <link rel="stylesheet" href="css/code/stylesheet.css" type="text/css" charset="utf-8" />
 <link rel="stylesheet" href="css/code_light/stylesheet.css" type="text/css" charset="utf-8" />
-<link href="css/genreology.css" rel="stylesheet"/>
-
-<div class="genre-select-wrapper">
-	<span class="genre-label">Genre:</span>
-
-	<div class="genre-select">
-		<span class="selected">Grunge</span>
-		<ul class="dropdown">
-		</ul>
-	</div>
-</div>
-
-<div id="vis"></div>
-<div id="detail-panel">
-	<div id="genre-detail" class="detail-view">
-		<h2 class="title">Genre Overview</h2>
-		<div class="artist-count">Total Artists in Sample: <span class="count"></span></div>
-		<div class="popular-cities"></div>
-	</div>
-	<div id="city-detail" class="detail-view" style="display: none;">
-		<h2 class="title"><span class="name"></span></h2>
-		<div class="artist-count total">Total Artists: <span class="count"></span></div>
-		<div class="artist-count current">Pre-<span class="year"></span> Artists: <span class="count"></span></div>
-		<div class="artists-wrapper">
-			<table class="artists"></table>
+<link href="css/global.css" rel="stylesheet"/>
+	<div class="wrapper">
+		<div class="header">
+			<div class="logo">
+				<h1 id="title">Genreology</h1>
+			</div>
+			<div class="nav">
+				<ul id="header-menu" class="menu">
+					<li class="menu-item selected">
+						<a href="index.html">Home</a>
+					</li>
+					<li class="menu-item">
+						<a href="details.html">Details</a>
+					</li>
+					<li class="menu-item">
+						<a href="stories.html">Stories</a>
+					</li>						
+					<li class="menu-item">
+						<a href="screencast.html">Screencast</a>
+					</li>
+					<li class="menu-item">
+						<a href="processbook.pdf">Process Book</a>
+					</li>				
+					<li class="menu-item">
+						<a href="https://github.com/melaniejustiniano/cs171-final-justiniano-sheets">GitHub</a>
+					</li>
+				</ul>
+			</div>
 		</div>
-		<div class="fade"></div>
-	</div>
-	<div id="transport">
-		<button id="start"><img width="25px" src="css/transport/start.png"></button>
-		<button id="prev"><img width="25px" src="css/transport/prev.png"></button>
-		<button id="play"><img width="25px" src="css/transport/play.png"></button>
-		<button id="next"><img width="25px" src="css/transport/next.png"></button>
-		<button id="end"><img width="25px" src="css/transport/end.png"></button>
-	</div>
-</div>
-<div id="slider"></div>
+		<div class="content">
+			<script src="http://d3js.org/d3.v3.min.js"></script>
+			<script src="http://d3js.org/topojson.v1.min.js"></script>
+			<link rel="stylesheet" href="css/code/stylesheet.css" type="text/css" charset="utf-8" />
+			<link rel="stylesheet" href="css/code_light/stylesheet.css" type="text/css" charset="utf-8" />
+			<link href="css/genreology.css" rel="stylesheet"/>
 
-<script src="genreology.js"></script>
+			<div class="genre-select-wrapper">
+				<span class="genre-label">Genre:</span>
 
+				<div class="genre-select">
+					<span class="selected">Grunge</span>
+					<ul class="dropdown">
+					</ul>
+				</div>
+			</div>
+
+			<div id="vis"></div>
+			<div id="detail-panel">
+				<div id="viz-info">
+					<span class="bold">Genrealogy</span> was developed by Melanie Justiniano and Matt Sheets to explore the evolution of music genres in the US. <div><a href="details.html">Read more.</a></div>
+				</div>
+				<div id="genre-detail" class="detail-view">
+					<h2 class="title">Genre Overview</h2>
+					<div class="artist-count">Total Artists in Sample: <span class="count"></span></div>
+					<div class="artist-count current">Pre-<span class="year"></span> Artists: <span class="count"></span></div>
+					<div class="popular-cities"></div>
+				</div>
+				<div id="city-detail" class="detail-view" style="display: none;">
+					<h2 class="title"><span class="name"></span></h2>
+					<div class="artist-count total">Total Artists: <span class="count"></span></div>
+					<div class="artist-count current">Pre-<span class="year"></span> Artists: <span class="count"></span></div>
+					<div class="artists-wrapper">
+						<table class="artists"></table>
+					</div>
+					<div class="close-city-detail-wrapper"><span id="close-city-detail">Return to Genre Overview</span></div>
+				</div>
+				<div id="transport">
+					<button id="start"><img width="25px" src="css/transport/start.png"></button>
+					<button id="prev"><img width="25px" src="css/transport/prev.png"></button>
+					<button id="play"><img width="25px" src="css/transport/play.png"></button>
+					<button id="next"><img width="25px" src="css/transport/next.png"></button>
+					<button id="end"><img width="25px" src="css/transport/end.png"></button>
+				</div>
+			</div>
+			<div id="slider"></div>
+
+			<script src="genreology.js"></script>
+
+		</div>
+	</div>
+	<div class="footer">
+		<div class="tagline">
+			<span class="bold">Genrealogy</span> was developed by Melanie Justiniano and Matt Sheets to explore the evolution of music genres in the US.
+		</div>
+		<div class="credits">
+			Powered by <a href="http://echonest.com/">The Echo Nest</a> & <a href="https://developers.google.com/maps/">Google Maps API</a>.
+		</div>
+	</div>
 </body>
 </html>
